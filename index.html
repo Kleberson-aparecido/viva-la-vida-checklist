@@ -1,0 +1,1695 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101820">
+<title>Viva La Vida | Checklist de Estoque</title>
+<style>
+:root{--bg:#0b1117;--panel:#131d27;--panel2:#1a2733;--text:#f4f7fa;--muted:#a9b7c5;--gold:#f3b944;--green:#38c98b;--red:#ff6675;--orange:#ffb454;--line:#2b3a48}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#111b25,#090e13 70%);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}
+header{padding:24px 16px 18px;background:#101820;border-bottom:1px solid var(--line)}.wrap{max-width:1100px;margin:auto} .brand{display:flex;gap:13px;align-items:center}.logo{width:48px;height:48px;display:grid;place-items:center;background:var(--gold);color:#111;border-radius:15px;font-size:25px;font-weight:900}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:2px;font-weight:800}.brand h1{font-size:clamp(20px,4vw,30px);margin:3px 0}.brand p{margin:0;color:var(--muted);font-size:13px}
+main{max-width:1100px;margin:auto;padding:18px 14px 48px}.toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.stat,.field,.category{background:var(--panel);border:1px solid var(--line);border-radius:14px}.stat{padding:13px}.stat span{font-size:12px;color:var(--muted)}.stat strong{display:block;font-size:25px;margin-top:4px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{padding:11px 12px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}.field input,.field select,.search{width:100%;background:#0b1219;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px;font:inherit;outline:none}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:11px 14px;border-radius:10px;font-weight:750;cursor:pointer}.btn.primary{background:var(--gold);color:#151515;border-color:var(--gold)}.btn:hover{filter:brightness(1.08)}.search{margin-bottom:12px}.category{margin:12px 0;overflow:hidden}.cathead{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--panel2);font-weight:850}.cathead small{color:var(--muted);font-weight:500}.product{padding:13px;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(140px,1.5fr) repeat(4,minmax(75px,.65fr)) minmax(100px,.8fr);gap:9px;align-items:center}.pname{font-weight:700}.pname small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.product label{font-size:10px;color:var(--muted);display:block;margin-bottom:5px}.product input{width:100%;min-width:0;background:#0b1219;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px 7px;font:inherit}.status{font-size:11px;font-weight:800;border-radius:30px;padding:7px 9px;text-align:center;white-space:nowrap}.s-un{color:#c0cbd5;background:#2a3742}.s-ok{color:#72e3b1;background:#153c2d}.s-low{color:#ffd08b;background:#49331b}.s-out{color:#ff9ca6;background:#48202a}.smallnote{font-size:12px;color:var(--muted);line-height:1.5}.hidden{display:none!important}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px}
+@media(max-width:760px){.toolbar{grid-template-columns:repeat(2,1fr)}.product{grid-template-columns:1fr 1fr 1fr;gap:8px}.pname{grid-column:1/-1}.status{grid-column:1/-1;justify-self:start}.meta{grid-template-columns:1fr}.cathead{font-size:14px}.product input{padding:10px 7px}}
+@media print{body{background:#fff;color:#111}header{background:#fff;color:#111;border-bottom:2px solid #222}.brand p,.eyebrow,.stat span,.field label,.product label,.pname small,.smallnote,.footer,.controls,.search{display:none!important}main{padding:0;max-width:none}.stat,.field,.category{background:#fff;border-color:#ccc;color:#111;break-inside:avoid}.stat strong{font-size:18px}.meta{margin-bottom:8px}.product{color:#111;border-color:#ddd;padding:7px;grid-template-columns:1.5fr repeat(4,.65fr) .8fr}.product input{border:0;color:#111;background:#fff;padding:2px}.cathead{background:#eee;color:#111}.status{background:#eee;color:#111}.category{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><div class="wrap brand"><div class="logo">V</div><div><div class="eyebrow">ADEGA • CONTROLE OPERACIONAL</div><h1>Viva La Vida 24 Horas</h1><p>Checklist de contagem de estoque</p></div></div></header>
+<main>
+<div class="toolbar">
+<div class="stat"><span>Produtos cadastrados</span><strong id="total">163</strong></div>
+<div class="stat"><span>Não contados</span><strong id="uncounted">163</strong></div>
+<div class="stat"><span>Estoque baixo</span><strong id="low">0</strong></div>
+<div class="stat"><span>Em falta</span><strong id="out">0</strong></div>
+</div>
+<div class="meta">
+<div class="field"><label for="responsible">RESPONSÁVEL PELA CONTAGEM</label><input id="responsible" placeholder="Nome do colaborador"></div>
+<div class="field"><label for="shift">TIPO DE CONTAGEM</label><select id="shift"><option>Abertura de plantão</option><option>Fechamento de plantão</option><option>Contagem geral</option></select></div>
+</div>
+<div class="controls">
+<button class="btn primary" id="save">Salvar contagem neste aparelho</button>
+<button class="btn" id="pdf">Exportar / salvar PDF</button>
+<button class="btn" id="image">Baixar imagem do relatório</button>
+<button class="btn" id="csv">Exportar planilha CSV</button>
+<button class="btn" id="reset">Zerar contagem</button>
+</div>
+<p class="smallnote">Todas as quantidades começam em zero, mas cada item começa como <b>Não contado</b>. Marque “Contado” depois de conferir o produto. Estoque baixo só é calculado quando você definir um mínimo maior que zero. Os dados ficam salvos no navegador deste aparelho; use a exportação para guardar ou compartilhar o relatório.</p>
+<input class="search" id="search" placeholder="🔎 Buscar produto ou categoria...">
+<div id="inventory"></div>
+<div class="footer">Viva La Vida 24 Horas • Controle de estoque • Confira os números antes de finalizar o turno.</div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const INITIAL = [
+  {
+    "id": "p1",
+    "category": "GELO",
+    "name": "Gelo tropical",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p2",
+    "category": "GELO",
+    "name": "Gelo melancia",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p3",
+    "category": "GELO",
+    "name": "Gelo coco",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p4",
+    "category": "GELO",
+    "name": "Gelo de uva",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p5",
+    "category": "GELO",
+    "name": "Gelo de maçã verde",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p6",
+    "category": "GELO",
+    "name": "Gelo busca brisa",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p7",
+    "category": "GELO",
+    "name": "Gelo pitaya",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p8",
+    "category": "GELO",
+    "name": "Gelo de água",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p9",
+    "category": "GELO",
+    "name": "Gelo de pêssego",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p10",
+    "category": "GELO",
+    "name": "Gelo de morango",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p11",
+    "category": "DOCES",
+    "name": "Fofura",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p12",
+    "category": "DOCES",
+    "name": "Pururuca",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p13",
+    "category": "DOCES",
+    "name": "Bala",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p14",
+    "category": "DOCES",
+    "name": "Biscoito",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p15",
+    "category": "DOCES",
+    "name": "Chiclete rosa",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p16",
+    "category": "DOCES",
+    "name": "Miojo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p17",
+    "category": "DOCES",
+    "name": "Chiclete verde",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p18",
+    "category": "DOCES",
+    "name": "Chiclete maracujá",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p19",
+    "category": "DOCES",
+    "name": "Chiclete vermelho",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p20",
+    "category": "DOCES",
+    "name": "Chiclete roxo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p21",
+    "category": "DOCES",
+    "name": "Chiclete 7 belo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p22",
+    "category": "DOCES",
+    "name": "Bolinho",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p23",
+    "category": "DOCES",
+    "name": "Pirulito vermelho",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p24",
+    "category": "DOCES",
+    "name": "Pirulito roxo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p25",
+    "category": "DOCES",
+    "name": "Pirulito beijo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p26",
+    "category": "DOCES",
+    "name": "Pirulito verde",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p27",
+    "category": "DOCES",
+    "name": "Gibi",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p28",
+    "category": "DOCES",
+    "name": "Happy ball",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p29",
+    "category": "DOCES",
+    "name": "Paçocas",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p30",
+    "category": "DOCES",
+    "name": "Doce de chocolate",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p31",
+    "category": "DOCES",
+    "name": "Doce de coco",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p32",
+    "category": "DOCES",
+    "name": "Cocada",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p33",
+    "category": "DOCES",
+    "name": "FREEGELLS verde",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p34",
+    "category": "DOCES",
+    "name": "FREEGELLS preto",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p35",
+    "category": "DOCES",
+    "name": "Chiclete croc",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p36",
+    "category": "SEDAS E ACESSÓRIOS",
+    "name": "Seda pequena",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p37",
+    "category": "SEDAS E ACESSÓRIOS",
+    "name": "Seda grande",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p38",
+    "category": "SEDAS E ACESSÓRIOS",
+    "name": "Piteira grande",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p39",
+    "category": "SEDAS E ACESSÓRIOS",
+    "name": "Piteira pequena",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p40",
+    "category": "SEDAS E ACESSÓRIOS",
+    "name": "Isqueiro",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p41",
+    "category": "SEDAS E ACESSÓRIOS",
+    "name": "Bic original",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p42",
+    "category": "SEDAS E ACESSÓRIOS",
+    "name": "Tesoura",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p43",
+    "category": "TABACARIA",
+    "name": "Eight",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p44",
+    "category": "TABACARIA",
+    "name": "Hotmans azul",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p45",
+    "category": "TABACARIA",
+    "name": "Hotmans vermelho",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p46",
+    "category": "TABACARIA",
+    "name": "Lucky Strike",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p47",
+    "category": "TABACARIA",
+    "name": "Dunhill",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p48",
+    "category": "TABACARIA",
+    "name": "Carvão",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p49",
+    "category": "TABACARIA",
+    "name": "Essência",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p50",
+    "category": "TABACARIA",
+    "name": "Alumínio",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p51",
+    "category": "TABACARIA",
+    "name": "Tabaco",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p52",
+    "category": "LIMPEZA",
+    "name": "Bombril",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p53",
+    "category": "LIMPEZA",
+    "name": "Cândida",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p54",
+    "category": "LIMPEZA",
+    "name": "Desinfetante",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p55",
+    "category": "LIMPEZA",
+    "name": "Detergente",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p56",
+    "category": "DESCARTÁVEIS",
+    "name": "Copo 700 ml",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p57",
+    "category": "DESCARTÁVEIS",
+    "name": "Copo 200 ml",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p58",
+    "category": "DESCARTÁVEIS",
+    "name": "Tampa",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p59",
+    "category": "DESCARTÁVEIS",
+    "name": "Canudo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p60",
+    "category": "DESCARTÁVEIS",
+    "name": "Sacola",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p61",
+    "category": "DESCARTÁVEIS",
+    "name": "Saco de lixo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p62",
+    "category": "ENERGÉTICOS",
+    "name": "Energético tradicional",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p63",
+    "category": "ENERGÉTICOS",
+    "name": "Energético melancia",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p64",
+    "category": "ENERGÉTICOS",
+    "name": "Energético coco/açaí",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p65",
+    "category": "ENERGÉTICOS",
+    "name": "Energético tropical",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p66",
+    "category": "ENERGÉTICOS",
+    "name": "Energético pêssego e morango",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p67",
+    "category": "ENERGÉTICOS",
+    "name": "Energético Royale",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p68",
+    "category": "ENERGÉTICOS",
+    "name": "Energético maçã verde",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p69",
+    "category": "ENERGÉTICOS",
+    "name": "Red Bull tradicional",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p70",
+    "category": "ENERGÉTICOS",
+    "name": "Red Bull tropical",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p71",
+    "category": "ENERGÉTICOS",
+    "name": "Red Bull melancia",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p72",
+    "category": "ENERGÉTICOS",
+    "name": "Monster",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p73",
+    "category": "ENERGÉTICOS",
+    "name": "Red Bull verde",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p74",
+    "category": "CANTINHO DO VALE",
+    "name": "Draft",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p75",
+    "category": "CANTINHO DO VALE",
+    "name": "Pérgola",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p76",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Red Label",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p77",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Ballantine's",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p78",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Cavalo Branco (White Horse)",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p79",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Beefeater tradicional",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p80",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Beefeater Pink",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p81",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Jack Daniel's tradicional",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p82",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Jack maçã",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p83",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Jack canela",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p84",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Circo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p85",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Cockaland",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p86",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Passaporte",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p87",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Chanceler",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p88",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Askov vermelha",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p89",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Askov maracujá",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p90",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Askov azul",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p91",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Askov limão",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p92",
+    "category": "WHISKY / DESTILADOS",
+    "name": "Draft",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p93",
+    "category": "CACHAÇAS",
+    "name": "Velho Barreiro",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p94",
+    "category": "CACHAÇAS",
+    "name": "51",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p95",
+    "category": "CACHAÇAS",
+    "name": "Pitu",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p96",
+    "category": "CACHAÇAS",
+    "name": "Pitu lata",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p97",
+    "category": "CACHAÇAS",
+    "name": "Velho lata",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p98",
+    "category": "CACHAÇAS",
+    "name": "Para Tudo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p99",
+    "category": "CACHAÇAS",
+    "name": "Paisano",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p100",
+    "category": "CACHAÇAS",
+    "name": "São João",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p101",
+    "category": "CACHAÇAS",
+    "name": "Sinar",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p102",
+    "category": "CACHAÇAS",
+    "name": "Cariri",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p103",
+    "category": "CACHAÇAS",
+    "name": "Caranguejo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p104",
+    "category": "CACHAÇAS",
+    "name": "Corote",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p105",
+    "category": "CACHAÇAS",
+    "name": "Presidente",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p106",
+    "category": "CACHAÇAS",
+    "name": "Donus",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p107",
+    "category": "CACHAÇAS",
+    "name": "Dreah",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p108",
+    "category": "CACHAÇAS",
+    "name": "Busca Brisa",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p109",
+    "category": "CACHAÇAS",
+    "name": "Brisa Mágica",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p110",
+    "category": "CACHAÇAS",
+    "name": "Praianinha",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p111",
+    "category": "GIN",
+    "name": "Gin melancia",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p112",
+    "category": "GIN",
+    "name": "Gin maçã verde",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p113",
+    "category": "GIN",
+    "name": "Gin Royale",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p114",
+    "category": "GIN",
+    "name": "Gin tropical",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p115",
+    "category": "GIN",
+    "name": "Gin pêssego/morango",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p116",
+    "category": "GIN",
+    "name": "Gin morango",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p117",
+    "category": "GIN",
+    "name": "Gin tradicional",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p118",
+    "category": "GIN",
+    "name": "Gin coco/açaí",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p119",
+    "category": "GIN",
+    "name": "Gin Kairos tradicional",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p120",
+    "category": "GIN",
+    "name": "Gin Kairos tropical",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p121",
+    "category": "GIN",
+    "name": "Gin Kairos melancia",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p122",
+    "category": "GIN",
+    "name": "Gin Kairos Royale",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p123",
+    "category": "GIN",
+    "name": "Gin Stroke",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p124",
+    "category": "CERVEJAS",
+    "name": "Heineken",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p125",
+    "category": "CERVEJAS",
+    "name": "Amstel",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p126",
+    "category": "CERVEJAS",
+    "name": "Original com 8",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p127",
+    "category": "CERVEJAS",
+    "name": "Original com 15",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p128",
+    "category": "CERVEJAS",
+    "name": "Budweiser",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p129",
+    "category": "CERVEJAS",
+    "name": "Império",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p130",
+    "category": "CERVEJAS",
+    "name": "Skol",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p131",
+    "category": "CERVEJAS",
+    "name": "Brahma",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p132",
+    "category": "CERVEJAS",
+    "name": "Itaipava",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p133",
+    "category": "CERVEJAS",
+    "name": "Budweiser long neck",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p134",
+    "category": "CERVEJAS",
+    "name": "Heineken long neck",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p135",
+    "category": "CERVEJAS",
+    "name": "Ice limão",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p136",
+    "category": "CERVEJAS",
+    "name": "Ice maracujá lata",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p137",
+    "category": "CERVEJAS",
+    "name": "Ice limão lata",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p138",
+    "category": "CERVEJAS",
+    "name": "Ice fruta mix vermelha",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p139",
+    "category": "CERVEJAS",
+    "name": "Ice kiwi",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p140",
+    "category": "CERVEJAS",
+    "name": "Ice amarelo",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p141",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Coca-Cola 2 L",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p142",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Coca-Cola 350 ml",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p143",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Coca-Cola 200 ml",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p144",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Sprite lata",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p145",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Sukita",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p146",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Convenção Frutaina",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p147",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Convenção guaraná",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p148",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Convenção laranja",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p149",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Convenção limão",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p150",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Convenção uva",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p151",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Água 500 ml",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p152",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Sukita 2 L",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p153",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Fanta laranja",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p154",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Fanta uva",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p155",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Refrigerante Festa 2 L",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p156",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Suco Xtapa",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p157",
+    "category": "REFRIGERANTES / BEBIDAS",
+    "name": "Tubaína 200 ml",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p158",
+    "category": "OUTROS",
+    "name": "Limão",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p159",
+    "category": "OUTROS",
+    "name": "Açúcar",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p160",
+    "category": "OUTROS",
+    "name": "Maracujá",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p161",
+    "category": "OUTROS",
+    "name": "Morango",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p162",
+    "category": "OUTROS",
+    "name": "Guaraviton",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  },
+  {
+    "id": "p163",
+    "category": "OUTROS",
+    "name": "Suco de caixinha",
+    "closed": 0,
+    "open": 0,
+    "loose": 0,
+    "minimum": 0,
+    "counted": false
+  }
+];
+const KEY='viva-la-vida-stock-v1';
+let items=JSON.parse(JSON.stringify(INITIAL));
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function status(p){if(!p.counted)return ['Não contado','un'];const total=Number(p.closed||0)+Number(p.open||0)+Number(p.loose||0);if(total===0)return ['Em falta','out'];if(Number(p.minimum)>0&&total<Number(p.minimum))return ['Estoque baixo','low'];return ['Estoque OK','ok']}
+function render(){const q=document.getElementById('search').value.toLowerCase().trim();const cats=[...new Set(items.map(p=>p.category))];let html='';cats.forEach(cat=>{const arr=items.filter(p=>p.category===cat&&(!q||(p.name+' '+p.category).toLowerCase().includes(q)));if(!arr.length)return;html+=`<section class="category"><div class="cathead"><span>${esc(cat)}</span><small>${arr.length} produtos</small></div>`;arr.forEach(p=>{const [s,cl]=status(p);html+=`<div class="product" data-id="${p.id}"><div class="pname">${esc(p.name)}<small>Unidades separadas por tipo</small></div><div><label>Fechadas</label><input type="number" min="0" step="1" data-field="closed" value="${p.closed}" aria-label="Unidades fechadas de ${esc(p.name)}"></div><div><label>Abertas</label><input type="number" min="0" step="1" data-field="open" value="${p.open}" aria-label="Unidades abertas de ${esc(p.name)}"></div><div><label>Avulsas</label><input type="number" min="0" step="1" data-field="loose" value="${p.loose}" aria-label="Unidades avulsas de ${esc(p.name)}"></div><div><label>Mínimo total</label><input type="number" min="0" step="1" data-field="minimum" value="${p.minimum}" aria-label="Estoque mínimo de ${esc(p.name)}"></div><div><label>Conferência</label><select data-field="counted" aria-label="Status de contagem de ${esc(p.name)}"><option value="false" ${!p.counted?'selected':''}>Não contado</option><option value="true" ${p.counted?'selected':''}>Contado</option></select><div style="margin-top:6px"><span class="status s-${cl}">${s}</span></div></div></div>`});html+='</section>'});document.getElementById('inventory').innerHTML=html;document.getElementById('total').textContent=items.length;document.getElementById('uncounted').textContent=items.filter(p=>!p.counted).length;document.getElementById('low').textContent=items.filter(p=>status(p)[1]==='low').length;document.getElementById('out').textContent=items.filter(p=>status(p)[1]==='out').length}
+function persist(silent=false){const data={items,responsible:document.getElementById('responsible').value,shift:document.getElementById('shift').value,savedAt:new Date().toISOString()};localStorage.setItem(KEY,JSON.stringify(data));if(!silent)alert('Contagem salva neste aparelho.');}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&Array.isArray(d.items)){const map=new Map(d.items.map(p=>[p.id,p]));items=INITIAL.map(p=>({...p,...(map.get(p.id)||{})}));document.getElementById('responsible').value=d.responsible||'';document.getElementById('shift').value=d.shift||'Abertura de plantão'}}catch(e){}}
+document.getElementById('inventory').addEventListener('change',e=>{const row=e.target.closest('.product');if(!row)return;const p=items.find(x=>x.id===row.dataset.id);const f=e.target.dataset.field;if(!p||!f)return;p[f]=f==='counted'?e.target.value==='true':Math.max(0,Number(e.target.value)||0);render();persist(true)});
+document.getElementById('inventory').addEventListener('input',e=>{if(!e.target.matches('input[data-field]'))return;const row=e.target.closest('.product');const p=items.find(x=>x.id===row.dataset.id);const f=e.target.dataset.field;if(p&&f){p[f]=Math.max(0,Number(e.target.value)||0);const [s,cl]=status(p);const st=row.querySelector('.status');if(st){st.textContent=s;st.className='status s-'+cl}document.getElementById('uncounted').textContent=items.filter(x=>!x.counted).length;document.getElementById('low').textContent=items.filter(x=>status(x)[1]==='low').length;document.getElementById('out').textContent=items.filter(x=>status(x)[1]==='out').length;persist(true)}});
+document.getElementById('save').onclick=()=>persist();
+document.getElementById('search').addEventListener('input',render);
+document.getElementById('responsible').addEventListener('change',()=>persist(true));document.getElementById('shift').addEventListener('change',()=>persist(true));
+document.getElementById('reset').onclick=()=>{if(confirm('Zerar todas as quantidades e marcar todos os produtos como Não contado?')){items=JSON.parse(JSON.stringify(INITIAL));items.forEach(p=>{p.closed=0;p.open=0;p.loose=0;p.minimum=0;p.counted=false});persist(true);render()}};
+function reportText(){const d=new Date().toLocaleString('pt-BR');return `VIVA LA VIDA 24 HORAS\\nCHECKLIST DE ESTOQUE\\nData: ${d}\\nResponsável: ${document.getElementById('responsible').value||'Não informado'}\\nContagem: ${document.getElementById('shift').value}\\n\\n`+items.map(p=>{const [s]=status(p);return `${p.category} | ${p.name} | Fechadas: ${p.closed} | Abertas: ${p.open} | Avulsas: ${p.loose} | Mínimo: ${p.minimum} | ${s}`}).join('\\n')}
+document.getElementById('pdf').onclick=()=>{const w=window.open('','_blank');if(!w){alert('Permita abrir a janela de impressão para salvar o PDF.');return}w.document.write('<html lang="pt-BR"><head><title>Estoque Viva La Vida</title><style>body{font:12px Arial;padding:24px;color:#111}h1{font-size:20px}pre{white-space:pre-wrap;font:11px Arial;line-height:1.5}</style></head><body><h1>VIVA LA VIDA 24 HORAS</h1><pre>'+esc(reportText())+'</pre><script>window.onload=()=>window.print()<\\/script></body></html>');w.document.close()};
+document.getElementById('csv').onclick=()=>{const rows=[['Categoria','Produto','Fechadas','Abertas','Avulsas','Mínimo','Contagem','Status'],...items.map(p=>[p.category,p.name,p.closed,p.open,p.loose,p.minimum,p.counted?'Contado':'Não contado',status(p)[0]])];const csv='\\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\\r\\n');download(new Blob([csv],{type:'text/csv;charset=utf-8'}),'estoque-viva-la-vida.csv')};
+document.getElementById('image').onclick=async()=>{if(!window.html2canvas){alert('A exportação de imagem precisa de internet para carregar a biblioteca. Use o PDF ou CSV.');return}const target=document.querySelector('main');const oldSearch=document.getElementById('search').value;document.getElementById('search').value='';render();try{const canvas=await html2canvas(target,{backgroundColor:'#0b1117',scale:1.5,useCORS:true});canvas.toBlob(b=>download(b,'relatorio-estoque-viva-la-vida.png'),'image/png')}catch(e){alert('Não foi possível gerar a imagem neste navegador. Tente exportar o PDF.')}document.getElementById('search').value=oldSearch;render()};
+function download(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+load();render();
+</script>
+</body></html>
